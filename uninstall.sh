@@ -47,4 +47,4 @@ fi
 
 echo ""
 echo ">> done."
-echo "   To remove the source tree too: rm -rf ~/git/snaptui"
+echo "   To remove the source tree too: rm -rf \"${PWD}\""
