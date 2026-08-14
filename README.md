@@ -56,7 +56,7 @@ sudo btrfs quota enable /
 Removes the binary and clears the `ALLOW_USERS` value install.sh set — only if
 it still equals your username, so any `ALLOW_USERS` you set yourself or that
 another tool (e.g. btrfs-assistant) uses is left untouched. Delete the source
-tree with `rm -rf ~/git/snaptui`.
+tree with `rm -rf ~/Work/snaptui`.
 
 ### Manual
 
