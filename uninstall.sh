@@ -3,7 +3,8 @@
 #
 # Reverses install.sh:
 #   1. Removes ~/.local/bin/snaptui
-#   2. Clears ALLOW_USERS on snapper configs — but ONLY where it is
+#   2. Removes the .desktop file from ~/.local/share/applications/
+#   3. Clears ALLOW_USERS on snapper configs — but ONLY where it is
 #      currently set to your username, so a value you set yourself (or
 #      that another tool, e.g. btrfs-assistant, relies on) is left alone.
 #
@@ -21,6 +22,15 @@ if [ -f "$BIN" ]; then
     echo "   removed ${BIN}"
 else
     echo "   ${BIN} not found, skipping"
+fi
+
+DESKTOP="${HOME}/.local/share/applications/snaptui.desktop"
+echo ">> removing desktop file..."
+if [ -f "$DESKTOP" ]; then
+    rm -f "$DESKTOP"
+    echo "   removed ${DESKTOP}"
+else
+    echo "   ${DESKTOP} not found, skipping"
 fi
 
 echo ">> clearing ALLOW_USERS granted by install.sh..."

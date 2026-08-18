@@ -18,6 +18,23 @@ mkdir -p "$(dirname "$BIN")"
 cp target/release/snaptui "$BIN"
 echo ">> installed ${BIN}"
 
+APP_DIR="${HOME}/.local/share/applications"
+mkdir -p "$APP_DIR"
+DESKTOP="${APP_DIR}/snaptui.desktop"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cat > "$DESKTOP" <<EOF
+[Desktop Entry]
+Name=SnaptUI
+Comment=Btrfs snapshot manager TUI
+Exec=${BIN}
+Icon=${SCRIPT_DIR}/icon.png
+Terminal=true
+Type=Application
+Categories=System;
+Keywords=btrfs;snapshot;snapper;
+EOF
+echo ">> desktop file installed to ${DESKTOP}"
+
 echo ">> granting D-Bus access (ALLOW_USERS) for all snapper configs..."
 mapfile -t configs < <(snapper list-configs | awk 'NR > 2 { print $1 }')
 if [ "${#configs[@]}" -eq 0 ]; then
