@@ -26,9 +26,9 @@ cat > "$DESKTOP" <<EOF
 [Desktop Entry]
 Name=SnaptUI
 Comment=Btrfs snapshot manager TUI
-Exec=${BIN}
+Exec=omarchy-launch-or-focus-tui --app-id=TUI.snaptui ${BIN}
 Icon=${SCRIPT_DIR}/icon.png
-Terminal=true
+Terminal=false
 Type=Application
 Categories=System;
 Keywords=btrfs;snapshot;snapper;
