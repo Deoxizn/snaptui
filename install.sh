@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# snaptui installer
+# snaptui installer — everything lands in ~/.local
 #
 # 1. Builds the release binary.
-# 2. Installs it to ~/.local/bin/snaptui.
+# 2. Installs binary to ~/.local/bin/snaptui,
+#    .desktop file to ~/.local/share/applications/,
+#    and icon to ~/.local/share/icons/hicolor/*/apps/.
 # 3. Grants your user access to the snapper D-Bus API by setting
 #    ALLOW_USERS on every snapper config (asks for your sudo password once).
 
@@ -18,16 +20,30 @@ mkdir -p "$(dirname "$BIN")"
 cp target/release/snaptui "$BIN"
 echo ">> installed ${BIN}"
 
+# Icon — installed to ~/.local so the app is self-contained after the source tree is deleted
+ICON_SRC="$(dirname "$0")/icon.png"
+ICON_DIR="${HOME}/.local/share/icons/hicolor/512x512/apps"
+ICON_DST="${ICON_DIR}/snaptui.png"
+if [ -f "$ICON_SRC" ]; then
+    mkdir -p "$ICON_DIR"
+    cp "$ICON_SRC" "$ICON_DST"
+    echo ">> icon installed to ${ICON_DST}"
+    # refresh icon cache if tool exists (best-effort, never fails install)
+    gtk-update-icon-cache -q "${HOME}/.local/share/icons/hicolor" 2>/dev/null || true
+else
+    echo "!! icon.png not found next to install.sh, skipping icon install"
+    ICON_DST=""
+fi
+
 APP_DIR="${HOME}/.local/share/applications"
 mkdir -p "$APP_DIR"
 DESKTOP="${APP_DIR}/snaptui.desktop"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cat > "$DESKTOP" <<EOF
 [Desktop Entry]
 Name=SnaptUI
 Comment=Btrfs snapshot manager TUI
 Exec=omarchy-launch-or-focus-tui --app-id=TUI.snaptui ${BIN}
-Icon=${SCRIPT_DIR}/icon.png
+Icon=snaptui
 Terminal=false
 Type=Application
 Categories=System;

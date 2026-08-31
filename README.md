@@ -36,8 +36,17 @@ drops to a `sudo` prompt to save.
 ./install.sh
 ```
 
-This builds the release binary, copies it to `~/.local/bin/snaptui`, and sets
-`ALLOW_USERS` on every snapper config (one sudo prompt).
+This builds the release binary and installs **everything to `~/.local`** for
+simplicity and uniformity (no root-owned files, no dependencies on the source
+tree):
+
+- binary → `~/.local/bin/snaptui`
+- launcher → `~/.local/share/applications/snaptui.desktop`
+- icon → `~/.local/share/icons/hicolor/512x512/apps/snaptui.png`
+
+It also sets `ALLOW_USERS` on every snapper config (one sudo prompt) so the
+app can talk to `snapperd` without a password. The source tree at
+`~/Work/snaptui` is not needed after install and can be deleted.
 
 To make the **size** column show real numbers, btrfs quotas need to be
 enabled on the filesystem (one-time, persists across reboots). Without it the
@@ -53,16 +62,22 @@ sudo btrfs quota enable /
 ./uninstall.sh
 ```
 
-Removes the binary and clears the `ALLOW_USERS` value install.sh set — only if
-it still equals your username, so any `ALLOW_USERS` you set yourself or that
-another tool (e.g. btrfs-assistant) uses is left untouched. Delete the source
-tree with `rm -rf ~/Work/snaptui`.
+Removes the binary, desktop file, and icon from `~/.local` and clears the
+`ALLOW_USERS` value install.sh set — only if it still equals your username, so
+any `ALLOW_USERS` you set yourself or that another tool (e.g. btrfs-assistant)
+uses is left untouched. Delete the source tree with `rm -rf ~/Work/snaptui`
+if you haven't already.
 
 ### Manual
 
 ```bash
 cargo build --release
+mkdir -p ~/.local/bin
 cp target/release/snaptui ~/.local/bin/
+mkdir -p ~/.local/share/icons/hicolor/512x512/apps
+cp icon.png ~/.local/share/icons/hicolor/512x512/apps/snaptui.png
+mkdir -p ~/.local/share/applications
+printf '[Desktop Entry]\nName=SnaptUI\nComment=Btrfs snapshot manager TUI\nExec=omarchy-launch-or-focus-tui --app-id=TUI.snaptui %s/.local/bin/snaptui\nIcon=snaptui\nTerminal=false\nType=Application\nCategories=System;\nKeywords=btrfs;snapshot;snapper;\n' "$HOME" > ~/.local/share/applications/snaptui.desktop
 sudo snapper -c root set-config "ALLOW_USERS=${USER}"
 ```
 

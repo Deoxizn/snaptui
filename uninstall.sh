@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# snaptui uninstaller
+# snaptui uninstaller — reverses install.sh (everything in ~/.local)
 #
-# Reverses install.sh:
 #   1. Removes ~/.local/bin/snaptui
 #   2. Removes the .desktop file from ~/.local/share/applications/
-#   3. Clears ALLOW_USERS on snapper configs — but ONLY where it is
+#   3. Removes the icon from ~/.local/share/icons/
+#   4. Clears ALLOW_USERS on snapper configs — but ONLY where it is
 #      currently set to your username, so a value you set yourself (or
 #      that another tool, e.g. btrfs-assistant, relies on) is left alone.
 #
@@ -31,6 +31,27 @@ if [ -f "$DESKTOP" ]; then
     echo "   removed ${DESKTOP}"
 else
     echo "   ${DESKTOP} not found, skipping"
+fi
+
+echo ">> removing icon..."
+ICONS=(
+    "${HOME}/.local/share/icons/hicolor/512x512/apps/snaptui.png"
+    "${HOME}/.local/share/icons/hicolor/256x256/apps/snaptui.png"
+    "${HOME}/.local/share/pixmaps/snaptui.png"
+)
+found_icon=0
+for p in "${ICONS[@]}"; do
+    if [ -f "$p" ]; then
+        rm -f "$p"
+        echo "   removed ${p}"
+        found_icon=1
+    fi
+done
+if [ "$found_icon" -eq 0 ]; then
+    # also handle legacy absolute-path icon reference inside an old .desktop (already removed above)
+    echo "   no installed icon found, skipping"
+else
+    gtk-update-icon-cache -q "${HOME}/.local/share/icons/hicolor" 2>/dev/null || true
 fi
 
 echo ">> clearing ALLOW_USERS granted by install.sh..."
