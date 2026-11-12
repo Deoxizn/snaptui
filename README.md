@@ -32,21 +32,38 @@ drops to a `sudo` prompt to save.
 
 ## Install
 
+### Prebuilt binary (recommended, no Rust needed)
+
+Download the three files from the
+[latest release](https://github.com/Deoxizn/snaptui/releases/tag/v0.1.0): `snaptui`, `install-binary.sh`,
+`icon.png`. Put them in one folder and run:
+
 ```bash
-./install.sh
+bash install-binary.sh
 ```
 
-This builds the release binary and installs **everything to `~/.local`** for
-simplicity and uniformity (no root-owned files, no dependencies on the source
-tree):
+This installs **everything to `~/.local`** for simplicity and uniformity (no
+root-owned files, no dependencies on the source tree):
 
 - binary → `~/.local/bin/snaptui`
 - launcher → `~/.local/share/applications/snaptui.desktop`
 - icon → `~/.local/share/icons/hicolor/512x512/apps/snaptui.png`
 
 It also sets `ALLOW_USERS` on every snapper config (one sudo prompt) so the
-app can talk to `snapperd` without a password. The source tree at
-`~/Work/snaptui` is not needed after install and can be deleted.
+app can talk to `snapperd` without a password. No Rust toolchain needed.
+
+### Build from source
+
+Requires cargo. Clone the repo and run:
+
+```bash
+./install.sh
+```
+
+This builds the release binary and installs the same three files to
+`~/.local` as above, then sets `ALLOW_USERS` on every snapper config. The
+source tree at `~/Work/snaptui` is not needed after install and can be
+deleted.
 
 To make the **size** column show real numbers, btrfs quotas need to be
 enabled on the filesystem (one-time, persists across reboots). Without it the
@@ -63,9 +80,9 @@ sudo btrfs quota enable /
 ```
 
 Removes the binary, desktop file, and icon from `~/.local` and clears the
-`ALLOW_USERS` value install.sh set — only if it still equals your username, so
+`ALLOW_USERS` value the installer set — only if it still equals your username, so
 any `ALLOW_USERS` you set yourself or that another tool (e.g. btrfs-assistant)
-uses is left untouched. Delete the source tree with `rm -rf ~/Work/snaptui`
+uses is left untouched. Works for both install methods. Delete the source tree with `rm -rf ~/Work/snaptui`
 if you haven't already.
 
 ### Manual
